@@ -1,0 +1,77 @@
+---
+# tasks file for sectools
+
+- name: Update, Install and Upgrade via ATP
+  become: true
+  tags: sectools_pkg
+  block:
+    - name: Ensure that apt repositories are up to date
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: "{{ aptcachetime }}"
+
+    - name: Upgrade installed packages
+      ansible.builtin.apt:
+        upgrade: "yes"
+
+    - name: Install Sectools packages
+      ansible.builtin.apt:
+        pkg: "{{ tools.apt_packages }}"
+        state: present
+        update_cache: true
+        cache_valid_time: "{{ aptcachetime }}"
+
+    - name: Remove useless packages from cache
+      ansible.builtin.apt:
+        autoclean: true
+
+    - name: Remove packages dependencies
+      ansible.builtin.apt:
+        autoremove: true
+
+- name: Download binaries and create symlinks
+  become: true
+  tags: sectools_binaries
+  block:
+    - name: Downloading Binaries
+      ansible.builtin.get_url:
+        url: "{{ item.url }}"
+        dest: "{{ sectools_dir }}/{{ item.name }}"
+        mode: "0755"
+      loop: "{{ tools.binaries }}"
+      when: "item.arch == arch"
+
+    - name: Unarchive a file that is already on the remote machine
+      ansible.builtin.unarchive:
+        src: "{{ sectools_dir }}/{{ item.name }}"
+        dest: "{{ binaries_dir }}/"
+        remote_src: true
+      loop: "{{ tools.binaries }}"
+      when: "item.compressed == 'yes' and item.arch == arch"
+
+    - name: Create a symbolic link
+      become: true
+      ansible.builtin.file:
+        src: "{{ binaries_dir }}/{{ item.sym_src }}"
+        dest: "{{ item.sym_dest }}"
+        owner: "{{ username }}"
+        group: "{{ usergroup }}"
+        state: link
+      loop: "{{ tools.binaries }}"
+      when: "item.symbolic == 'yes' and item.arch == arch"
+
+- name: Install Sectools for desktop
+  ansible.builtin.import_tasks: desktop.yml
+  when: desktop_enabled
+
+- name: Copy mytools to the Sectools directory
+  ansible.builtin.import_tasks: copy.yml
+  when: copy_mytools_enabled
+
+# - name: Install other Sectools via CMD
+#   become: true
+#   ansible.builtin.shell: "{{ item.cmd }}"
+#   loop: "{{ tools.other_tools }}"
+#   changed_when: false
+#   when: "item.type == 'shell'"
+#   tags: other_sectools

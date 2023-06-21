@@ -1,0 +1,7 @@
+---
+
+- name: All Playbooks
+  hosts: kali
+
+  roles:
+    - sectools

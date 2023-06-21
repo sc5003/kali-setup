@@ -1,0 +1,37 @@
+#!/bin/bash
+
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+
+# Installing Plugins
+USER=${USER:-$(id -u -n)}
+HOME="${HOME:-$(getent passwd $USER 2>/dev/null | cut -d: -f6)}"
+DIR="$HOME/.oh-my-zsh/custom/plugins"
+
+git clone https://github.com/zsh-users/zsh-autosuggestions.git $DIR/zsh-autosuggestions
+git clone https://github.com/zsh-users/zsh-syntax-highlighting.git $DIR/zsh-syntax-highlighting
+
+# Intalling Themes
+DIR="$HOME/.oh-my-zsh/custom/themes"
+cp {{ myconf_dir }}/parrot.zsh-theme $DIR/parrot.zsh-theme
+
+
+# Configure .zshrc file
+cp $HOME/.zshrc $HOME/.zshrc.org
+cp {{ myconf_dir }}/zshrc $HOME/.zshrc
+
+
+# Configure tmux
+echo "Configuring tmux terminal..."
+
+sl=".tmux.conf"
+git clone https://github.com/gpakosz/.tmux.git $HOME/.tmux/
+ln -s -f $HOME/.tmux/.tmux.conf $HOME/.tmux.conf
+cp {{ myconf_dir }}/tmux.conf.local $HOME/.tmux.conf.local
+
+
+# Set zsh as default shell
+# chsh -s $(which zsh)
+# exec zsh
+# source $HOME/.zshrc
+
+exit 0

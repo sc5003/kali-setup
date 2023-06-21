@@ -1,0 +1,10 @@
+---
+
+- name: All Playbooks
+  hosts: all
+
+  roles:
+    - common
+
+- name: Import Sectools Playbook
+  ansible.builtin.import_playbook: kali_playbook.yml

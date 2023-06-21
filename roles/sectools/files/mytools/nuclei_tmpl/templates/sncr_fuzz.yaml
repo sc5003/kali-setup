@@ -1,0 +1,53 @@
+1id: sncr-file-and-directory
+info:
+  name: SNCR File & Directory  - Detect
+  author: sc5003
+  severity: info
+  description: SNCR file  or directory was detected.
+  reference:
+    - https://en.wikipedia.org/wiki/Fuzzing
+  classification:
+    cvss-metrics: CVSS:3.9/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:N
+    cvss-score: 3.9
+  tags: fuzz
+
+requests:
+  - raw:
+      - |
+        GET {{sncrPaths}} HTTP/1.1
+        Host: {{Hostname}}
+        Origin: {{BaseURL}}
+        User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10; rv:33.0) Gecko/20100101 Firefox/33.0
+        Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7
+        Accept-Encoding: gzip, deflate
+        Accept-Language: en-US,en;q=0.9
+
+    payloads:
+      sncrPaths: helpers/wordlists/sncr-paths.txt
+   
+    redirects: true
+    threads: 10
+      #max-size: 1024  # Size in bytes - Max Size to read from server response
+    stop-at-first-match: false
+      #req-condition: true
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - "# HELP"
+          - "404"
+          - "error, see logs"
+          - "Internal Server Error" 
+          - "Not Found"
+          - "An Error has occured"
+          - "python_gc_objects_collected_total"
+        negative: true
+        part: body
+        condition: or
+      
+      - type: dsl
+        condition: and
+        dsl:
+          #- "len(body)>0 && status_code!=302"
+          - "len(body)>0 && content_length> 0 && status_code==200"
+          #- "status_code==200"

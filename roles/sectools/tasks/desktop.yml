@@ -1,0 +1,52 @@
+---
+
+- name: Update, Install and Upgrade via ATP
+  become: true
+  tags: sectools_desktop
+  block:
+    - name: Install sectools for desktop
+      ansible.builtin.apt:
+        pkg: "{{ tools.apt_packages_desktop }}"
+        state: present
+        update_cache: true
+        cache_valid_time: "{{ aptcachetime }}"
+
+    - name: Remove useless packages from cache
+      ansible.builtin.apt:
+        autoclean: true
+
+    - name: Remove packages dependencies
+      ansible.builtin.apt:
+        autoremove: true
+
+- name: Download Desktop binaries and create symlinks
+  become: true
+  tags: sectools_desktop_binaries
+  block:
+    - name: Downloading Binaries
+      ansible.builtin.get_url:
+        url: "{{ item.url }}"
+        dest: "{{ sectools_dir }}/{{ item.name }}"
+        mode: "0755"
+      loop: "{{ tools.desktop_binaries }}"
+      when: "item.arch == arch"
+
+    - name: Unarchive a file that is already on the remote machine
+      ansible.builtin.unarchive:
+        src: "{{ sectools_dir }}/{{ item.name }}"
+        dest: "{{ binaries_dir }}/"
+        remote_src: true
+      loop: "{{ tools.desktop_binaries }}"
+      when: "item.compressed == 'yes' and item.arch == arch"
+
+    - name: Create a symbolic link
+      become: true
+      ansible.builtin.file:
+        src: "{{ binaries_dir }}/{{ item.sym_src }}"
+        dest: "{{ item.sym_dest }}"
+        owner: "{{ username }}"
+        group: "{{ usergroup }}"
+        state: link
+      loop: "{{ tools.desktop_binaries }}"
+      when: "item.symbolic == 'yes' and item.arch == arch"
+

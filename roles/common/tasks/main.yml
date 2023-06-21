@@ -1,0 +1,80 @@
+---
+# tasks file for common
+
+- name: Get all available facts
+  ansible.builtin.debug:
+    var: ansible_facts
+
+- name: Install HTTPS transport
+  become: true
+  tags: common_atp_https
+  block:
+    - name: Ensure the system can use the HTTPS transport for APT
+      ansible.builtin.stat:
+        path: /usr/lib/apt/methods/https
+
+    - name: Installing HTTPS transport for APT
+      ansible.builtin.apt:
+        pkg: apt-transport-https
+        state: present
+
+- name: Update, Install and Upgrade via ATP
+  become: true
+  tags: common_atp_install
+  block:
+    - name: Ensure that apt repositories are up to date
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: "{{ aptcachetime }}"
+
+    - name: Upgrade installed packages
+      ansible.builtin.apt:
+        upgrade: "yes"
+
+    - name: Install common packages
+      ansible.builtin.apt:
+        pkg: "{{ common.apt_packages }}"
+        state: present
+        update_cache: true
+        cache_valid_time: "{{ aptcachetime }}"
+
+    - name: Remove useless packages from cache
+      ansible.builtin.apt:
+        autoclean: true
+
+    - name: Remove packages dependencies
+      ansible.builtin.apt:
+        autoremove: true
+
+- name: Creating common directories
+  become: true
+  tags: common_tools_dirs
+  block:
+    # - name: Check directory
+    #   ansible.builtin.stat:
+    #     path: "{{ tools_dir }}"
+    #   register: common_my_folder
+
+    # - name: Echo if directory already existed
+    #   ansible.builtin.debug:
+    #     msg: "the {{ tools_dir }} directory is already existed"
+    #   when: common_my_folder.stat.exists
+
+    - name: Create directories if not exist
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        mode: "0755"
+        group: "{{ usergroup }}"
+        owner: "{{ username }}"
+      with_items:
+        - "{{ tools_dir }}"
+        - "{{ sectools_dir }}"
+        - "{{ binaries_dir }}"
+        - "{{ mytools_dir }}"
+        - "{{ myconf_dir }}"
+      # when: not common_my_folder.stat.exists
+
+- name: Configure shell
+  ansible.builtin.import_tasks: shell.yml
+  tags: common_myconf

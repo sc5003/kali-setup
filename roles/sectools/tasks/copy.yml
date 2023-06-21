@@ -1,0 +1,11 @@
+---
+# Copy mytools to the remote
+
+- name: Copy directories
+  ansible.builtin.copy:
+    src: "{{ role_path }}/files/mytools/"
+    dest: "{{ mytools_dir }}/"
+    mode: '0755'
+    group: "{{ username }}"
+    owner: "{{ usergroup }}"
+  tags: sectools_mytools

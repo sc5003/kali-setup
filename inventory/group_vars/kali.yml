@@ -1,0 +1,38 @@
+---
+# The variable file used by the playbooks in the kali group
+# These don't have to be explicitly imported by vars_file: tey are autopopulated
+
+username: "kali"
+usergroup: "{{ username }}"
+home_dir: "/home/{{ username }}"
+
+
+### SECTOOLS ###
+################
+sectools_dir: "{{ tools_dir }}/sectools"
+binaries_dir: "{{ sectools_dir }}/binaries"
+mytools_dir: "{{ sectools_dir }}/mytools"
+local_bin: "/usr/local/bin"
+desktop_enabled: no
+copy_mytools_enabled: true
+nuclei_version: "2.9.6"
+
+
+tools:
+  apt_packages:
+    - kali-linux-headless
+    - seclists
+    - bsdextrautils
+  
+  apt_packages_desktop:
+    - burpsuite
+    - zaproxy
+  
+  desktop_binaries:
+    - {name: 'postman.tar.gz', url: 'https://dl.pstmn.io/download/latest/linux64', compressed: 'yes', arch: 'x64', symbolic: 'yes', sym_src: 'Postman/Postman', sym_dest: '{{ local_bin }}/postman'}
+    - {name: 'postman.tar.gz', url: 'https://dl.pstmn.io/download/latest/linux_arm64', compressed: 'yes', arch: 'arm64', symbolic: 'yes', sym_src: 'Postman/Postman', sym_dest: '{{ local_bin }}/postman'}
+    
+  binaries:
+    - {name: 'nuclei_{{ nuclei_version }}_linux_arm64.zip', url: 'https://github.com/projectdiscovery/nuclei/releases/download/v{{ nuclei_version }}/nuclei_{{ nuclei_version }}_linux_arm64.zip', compressed: 'yes', arch: 'arm64', symbolic: 'yes', sym_src: 'nuclei', sym_dest: '{{ local_bin }}/nuclei'}
+    - {name: 'nuclei_{{ nuclei_version }}_linux_amd64.zip', url: 'https://github.com/projectdiscovery/nuclei/releases/download/v{{ nuclei_version }}/nuclei_{{ nuclei_version }}_linux_amd64.zip', compressed: 'yes', arch: 'x64', symbolic: 'yes', sym_src: 'nuclei', sym_dest: '{{ local_bin }}/nuclei'}
+  

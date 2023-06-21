@@ -1,0 +1,44 @@
+id: hp-ilo-4
+
+info:
+  name: Hewlett Packard Integrated Lights Out 4 Login Panel - Detect
+  author: sc5003
+  severity: info
+  description: Hewlett Packard Integrated Lights Out 4 login panel was detected.
+  reference:
+    - https://www.hpe.com/us/en/servers/integrated-lights-out-ilo.html
+  classification:
+    cvss-metrics: CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:N
+    cvss-score: 0.0
+    cwe-id: CWE-200
+  tags: hp,ilo,panel
+
+requests:
+  - method: GET
+    path:
+      - "{{BaseURL}}/json/login_session"
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      
+      - type: word
+        words:
+          - 'HPE iLO 4'
+          - 'iLO 4'
+        condition: and
+
+    extractors:
+      - type: json
+        part: body
+        name: fw_ver
+        json:
+          - '."version"'
+
+      - type: json
+        part: body
+        name: server_name
+        json:
+          - '."server_name"'

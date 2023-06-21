@@ -1,0 +1,15 @@
+[kali_arm]
+kali1
+
+[kali_arm:vars]
+arch=arm64
+
+[kali_x64]
+kali-aws
+
+[kali_x64:vars]
+arch=x64
+
+[kali:children]
+kali_arm
+kali_x64

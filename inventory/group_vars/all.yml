@@ -1,0 +1,28 @@
+---
+
+aptcachetime: 3600
+working_dir: "/opt"
+tools_dir: "{{ working_dir }}/tools"
+myconf_dir: "{{ tools_dir }}/myconf"
+
+common:
+  apt_packages:
+    - build-essential
+    - ca-certificates
+    - curl
+    - dkms
+    - gcc
+    - git
+    - gnupg
+    - golang
+    - jq
+    - libelf-dev
+    - linux-headers-{{ ansible_kernel }}
+    - lsb-release
+    - net-tools
+    - openssl
+    - open-vm-tools-desktop
+    - tmux
+    - vim
+    - wget
+    - zsh
