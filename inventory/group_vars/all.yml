@@ -3,7 +3,7 @@
 aptcachetime: 3600
 working_dir: "/opt"
 tools_dir: "{{ working_dir }}/tools"
-myconf_dir: "{{ tools_dir }}/myconf"
+myconf_dir: "{{ home_dir }}/myconf"
 
 common:
   apt_packages:
