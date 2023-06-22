@@ -1,13 +1,20 @@
 ---
 
-- name: Check that the shell_setup file exists
-  ansible.builtin.stat:
-    path: "{{ myconf_dir }}/shell_setup.sh"
-  register: common_shell_setup_file
+- name: Check if oh-my-zsh dir exists
+  ansible.builtin.shell: "ls -ap {{ home_dir }} | grep -E '.oh-my-zsh/'"
   become: true
+  register: out
+  changed_when: false
+  ignore_errors: true
+  tags: common_omyzsh
+
+# - name: Print out
+#   ansible.builtin.debug:
+#     var: out.failed
+#   tags: common_omyzsh
 
 - name: Configure zsh shell, oh-my-zsh and tmux
-  when: not common_shell_setup_file.stat.exists
+  when: out.failed
   become: "{{ 'true' if 'root' == username else 'false' }}"
   block:
     - name: Create shell_setup.sh using template

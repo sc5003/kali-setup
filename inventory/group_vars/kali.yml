@@ -4,7 +4,6 @@
 
 username: "kali"
 usergroup: "{{ username }}"
-home_dir: "/home/{{ username }}"
 
 
 ### SECTOOLS ###

@@ -3,8 +3,22 @@
 - name: All Playbooks
   hosts: all
 
-  roles:
-    - common
+  tasks:
+    - name: Run common role
+      ansible.builtin.include_role:
+        name: common
+      loop:
+        - {username: "root", home_dir: "/root" }
+        - {username: "kali", home_dir: "/home/kali" }
+      loop_control:
+        label: "Runing role for {{ my_loop_var.username }}"
+        loop_var: my_loop_var
+      vars:
+        - username: "{{ my_loop_var.username }}"
+        - home_dir: "{{ my_loop_var.home_dir }}"
+      tags:
+        - common_myconf
+        - common_omyzsh
 
-- name: Import Sectools Playbook
-  ansible.builtin.import_playbook: kali_playbook.yml
+# - name: Import Sectools Playbook
+#   ansible.builtin.import_playbook: kali_playbook.yml
