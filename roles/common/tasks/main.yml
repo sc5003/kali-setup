@@ -78,3 +78,7 @@
 - name: Configure shell
   ansible.builtin.import_tasks: shell.yml
   tags: common_myconf
+
+- name: Install docker
+  ansible.builtin.import_tasks: docker.yml
+  tags: common_docker

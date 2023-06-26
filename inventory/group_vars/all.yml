@@ -22,7 +22,35 @@ common:
     - net-tools
     - openssl
     - open-vm-tools-desktop
+    - python3-venv
     - tmux
     - vim
     - wget
     - zsh
+  apt_docker:
+    - docker-ce 
+    - docker-ce-cli 
+    - containerd.io 
+    - docker-buildx-plugin 
+    - docker-compose-plugin
+  apt_desktop:
+    - brave-browser
+    - cherrytree
+    - code
+    - libnotify-bin
+    - libxtst6
+    - libxdo3
+    - vlc
+    - software-properties-common
+    - xclip
+  gpg_keys:
+    # The following keys do not need gpg dearmor
+    - { file: 'packages.microsoft', url: 'https://packages.microsoft.com/keys/microsoft.asc' }
+    # The following keys will need gpg dearmor (see next task), gpg dearmor will add gpg extension
+    - {file: 'brave-browser', url: 'https://brave-browser-apt-release.s3.brave.com/brave-browser-archive-keyring.gpg'}
+  gpg_dearmor:
+    - { file: 'packages.microsoft'}
+    - { file: 'brave-browser'}
+  apt_list:
+    - {name: 'vscode', src: 'deb [arch=arm64 signed-by=/etc/apt/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main'}
+    - {name: 'brave-browser', src: 'deb [arch=arm64 signed-by=/etc/apt/keyrings/brave-browser.gpg] https://brave-browser-apt-release.s3.brave.com/ stable main'}

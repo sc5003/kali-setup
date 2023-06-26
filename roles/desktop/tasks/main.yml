@@ -1,0 +1,63 @@
+---
+# tasks file for desktop
+- name: Get all available facts
+  ansible.builtin.debug:
+    var: ansible_facts
+
+- name: Update, Install and Upgrade via ATP
+  become: true
+  tags: common_install_desktop
+  block:
+    # Fetch gpg keys for trusted apt repositories
+    - name: Download apt repository gpg keys
+      become: true
+      ansible.builtin.get_url:
+        url: "{{ item.url }}"
+        dest: "/etc/apt/keyrings/{{ item.file }}"
+        mode: '0644'
+        force: true
+      loop:
+        "{{ common.gpg_keys }}"
+
+    # Extract keys for plain text pubic keys with dearmor, dearmor adds gpg file extension
+    - name: Extract and replace gpg keys with dearmor
+      become: true
+      ansible.builtin.command:
+        cmd: "gpg --dearmor /etc/apt/keyrings/{{ item.file }}"
+        creates: "/etc/apt/keyrings/{{ item.file }}.gpg"
+      loop:
+        "{{ common.gpg_dearmor }}"
+
+    - name: Add apt repositories
+      become: true
+      ansible.builtin.apt_repository:
+        repo: "{{ item.src }}"
+        filename: "{{ item.name }}"
+        state: present
+        update_cache: true
+      loop:
+        "{{ common.apt_list }}"
+
+    - name: Ensure that apt repositories are up to date
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: "{{ aptcachetime }}"
+
+    - name: Upgrade installed packages
+      ansible.builtin.apt:
+        upgrade: "yes"
+
+    - name: Install common packages
+      ansible.builtin.apt:
+        pkg: "{{ common.apt_desktop }}"
+        state: present
+        update_cache: true
+        cache_valid_time: "{{ aptcachetime }}"
+
+    - name: Remove useless packages from cache
+      ansible.builtin.apt:
+        autoclean: true
+
+    - name: Remove packages dependencies
+      ansible.builtin.apt:
+        autoremove: true

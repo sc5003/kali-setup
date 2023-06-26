@@ -1,5 +1,6 @@
 [kali_arm]
-kali1
+kali-vmware
+kali-utm
 
 [kali_arm:vars]
 arch=arm64

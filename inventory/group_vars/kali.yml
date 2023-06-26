@@ -12,7 +12,7 @@ sectools_dir: "{{ tools_dir }}/sectools"
 binaries_dir: "{{ sectools_dir }}/binaries"
 mytools_dir: "{{ sectools_dir }}/mytools"
 local_bin: "/usr/local/bin"
-desktop_enabled: no
+desktop_enabled: false
 copy_mytools_enabled: true
 nuclei_version: "2.9.6"
 

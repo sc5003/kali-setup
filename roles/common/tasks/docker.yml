@@ -1,0 +1,27 @@
+---
+
+- name: Install docker
+  become: true
+  tags: common_install_docker
+  block:
+    - name: Add docker GPG key
+      ansible.builtin.get_url:
+        url: https://download.docker.com/linux/debian/gpg
+        dest: /etc/apt/trusted.gpg.d/docker.acs
+        mode: '0644'
+        force: true
+
+    - name: Add docker repo
+      ansible.builtin.apt_repository:
+        filename: docker
+        repo: 'deb [arch={{ arch }} signed-by=/etc/apt/trusted.gpg.d/docker.acs] https://download.docker.com/linux/debian bullseye stable'
+        state: present
+        update_cache: true
+
+    - name: Install docker
+      become: true
+      ansible.builtin.apt:
+        pkg: "{{ common.apt_docker }}"
+        state: present
+        update_cache: true
+        cache_valid_time: "{{ aptcachetime }}"

@@ -20,5 +20,14 @@
         - common_myconf
         - common_omyzsh
 
-# - name: Import Sectools Playbook
-#   ansible.builtin.import_playbook: kali_playbook.yml
+    - name: Run desktop role
+      ansible.builtin.include_role:
+        name: desktop
+      tags:
+        - common_install_desktop
+      when: desktop_enabled
+
+
+- name: Import Sectools Playbook
+  ansible.builtin.import_playbook: kali_playbook.yml
+
