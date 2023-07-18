@@ -68,6 +68,10 @@
   ansible.builtin.import_tasks: copy.yml
   when: copy_mytools_enabled
 
+- name: Download docker compose files
+  ansible.builtin.import_tasks: docker.yml
+
+
 # - name: Install other Sectools via CMD
 #   become: true
 #   ansible.builtin.shell: "{{ item.cmd }}"

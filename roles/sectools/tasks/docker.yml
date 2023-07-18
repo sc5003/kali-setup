@@ -1,0 +1,26 @@
+---
+# tasks file for dockers
+
+- name: Create directories if not exist
+  become: true
+  ansible.builtin.file:
+    path: "{{ sectools_dir }}/{{ item.name }}"
+    state: directory
+    mode: "0755"
+    group: "{{ usergroup }}"
+    owner: "{{ username }}"
+  with_items:
+    - "{{ tools.docker_compose_files }}"
+
+- name: Download docker compose file
+  become: true
+  tags: sectools_docker
+  block:
+    - name: Downloading Docker Files
+      ansible.builtin.get_url:
+        url: "{{ item.location }}"
+        dest: "{{ sectools_dir }}/{{ item.name }}"
+        mode: "0755"
+      loop: "{{ tools.docker_compose_files }}"
+      when: "item.arch == arch"
+

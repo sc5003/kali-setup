@@ -12,9 +12,10 @@ sectools_dir: "{{ tools_dir }}/sectools"
 binaries_dir: "{{ sectools_dir }}/binaries"
 mytools_dir: "{{ sectools_dir }}/mytools"
 local_bin: "/usr/local/bin"
-desktop_enabled: false
-copy_mytools_enabled: true
-nuclei_version: "2.9.6"
+desktop_enabled: true
+copy_mytools_enabled: false
+nuclei_version: "2.9.8"
+openVAS_version: docker-compose-22.4.yml
 
 
 tools:
@@ -22,6 +23,7 @@ tools:
     - kali-linux-headless
     - seclists
     - bsdextrautils
+    - uniscan
   
   apt_packages_desktop:
     - burpsuite
@@ -35,3 +37,5 @@ tools:
     - {name: 'nuclei_{{ nuclei_version }}_linux_arm64.zip', url: 'https://github.com/projectdiscovery/nuclei/releases/download/v{{ nuclei_version }}/nuclei_{{ nuclei_version }}_linux_arm64.zip', compressed: 'yes', arch: 'arm64', symbolic: 'yes', sym_src: 'nuclei', sym_dest: '{{ local_bin }}/nuclei'}
     - {name: 'nuclei_{{ nuclei_version }}_linux_amd64.zip', url: 'https://github.com/projectdiscovery/nuclei/releases/download/v{{ nuclei_version }}/nuclei_{{ nuclei_version }}_linux_amd64.zip', compressed: 'yes', arch: 'x64', symbolic: 'yes', sym_src: 'nuclei', sym_dest: '{{ local_bin }}/nuclei'}
   
+  docker_compose_files:
+    - {name: 'OpenVAS', location: 'https://greenbone.github.io/docs/latest/_static/{{ openVAS_version }}', arch: 'arm64'}
